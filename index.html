@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Showing Movie Data from an API</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script type="module" src="./js/scripts.js"></script>
+</head>
+<body>
+    <h1>Movie Data</h1>
+    <div x-data="{
+        movies: [],
+        error: null,
+        loading: false,
+        async loadMovieData() {
+            // Set loading to true  -you may need to throttle your browser speed to see the effects of this:
+            // https://www.browserstack.com/guide/how-to-perform-network-throttling-in-chrome
+            this.loading = true;
+            // Reset this.error, just in case this function has already run and it generated an error
+            this.error = null;
+            try {
+                // Run loadMovies() from our scripts.js file, using await because the function is asynchronous
+                this.movies = await loadMovies();
+            } catch (err) {
+                // If an error occurs, set this.error to the error message
+                this.error = err.message;
+            } finally {
+                // Hide loading indicator whether the request was successful or not
+                this.loading = false;
+            }
+        }
+    }">
+        <button @click="loadMovieData()">Load Movies</button>
+        <div x-cloak x-show="loading">Loading...</div>
+        <div x-cloak x-show="error" x-text="'Error: ' + error"></div>
+        <ul>
+            <template x-for="movie in movies" :key="movie.id">
+                <li x-text="movie.title"></li>
+            </template>
+        </ul>
+    </div>
+</body>
+</html>
